@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Leave review | Movie Review{% endblock %}
+
+{% block content %}
+  <main>
+    <div class="nav" style="margin-bottom: 20px;">
+      <a href="{% url 'profile' %}">Back to profile</a>
+    </div>
+
+    <h1>Leave review</h1>
+    <p class="help">{{ watched_movie.title }} ({{ watched_movie.year }})</p>
+
+    <form method="post" style="margin-top: 20px;">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      {% for field in form %}
+        <div class="field">
+          {{ field.label_tag }}
+          {{ field }}
+          {{ field.errors }}
+        </div>
+      {% endfor %}
+      <button class="button primary" type="submit">Save review</button>
+    </form>
+  </main>
+{% endblock %}

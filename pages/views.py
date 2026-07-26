@@ -1,0 +1,110 @@
+from django.contrib.auth import login
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseBadRequest
+from django.views.decorators.http import require_POST
+from django.shortcuts import get_object_or_404, redirect, render
+
+from .forms import MovieReviewForm
+from .models import Movie, MovieReview, WatchedMovie
+
+
+def home(request):
+	return render(request, "home.html")
+
+
+def movie_list(request):
+	search_query = request.GET.get("q", "").strip()
+	show_all = request.GET.get("all") == "1"
+	movie_queryset = Movie.objects.all()
+
+	if search_query:
+		movies = movie_queryset.filter(title__icontains=search_query)
+		result_message = f'Search results for "{search_query}".'
+		if not movies.exists():
+			result_message = f'No movies found with "{search_query}".'
+	elif show_all:
+		movies = movie_queryset
+		result_message = "Showing all movies."
+	else:
+		movies = movie_queryset.none()
+		result_message = "Use search or click All movies to browse the full list."
+
+	return render(
+		request,
+		"movies/list.html",
+		{
+			"movies": movies,
+			"search_query": search_query,
+			"result_message": result_message,
+			"show_all": show_all,
+		},
+	)
+
+
+@login_required
+@require_POST
+def add_to_watched_movies(request):
+	movie_id = request.POST.get("movie_id")
+	if not movie_id:
+		return HttpResponseBadRequest("Missing movie id.")
+
+	movie = get_object_or_404(Movie, id=movie_id)
+	WatchedMovie.objects.get_or_create(
+		user=request.user,
+		title=movie.title,
+		year=movie.year,
+	)
+
+	return redirect("movie-list")
+
+
+@login_required
+def profile(request):
+	watched_movies = WatchedMovie.objects.filter(user=request.user)
+	reviews = MovieReview.objects.filter(watched_movie__user=request.user).select_related("watched_movie")
+	return render(request, "profile.html", {"watched_movies": watched_movies, "reviews": reviews})
+
+
+@login_required
+def leave_review(request, watched_movie_id):
+	watched_movie = get_object_or_404(WatchedMovie, id=watched_movie_id, user=request.user)
+
+	try:
+		review = watched_movie.review
+	except MovieReview.DoesNotExist:
+		review = None
+
+	if request.method == "POST":
+		form = MovieReviewForm(request.POST, instance=review)
+		if form.is_valid():
+			review_obj = form.save(commit=False)
+			review_obj.watched_movie = watched_movie
+			review_obj.save()
+			return redirect("profile")
+	else:
+		form = MovieReviewForm(instance=review)
+
+	context = {
+		"watched_movie": watched_movie,
+		"form": form,
+	}
+	return render(request, "movies/leave_review.html", context)
+
+
+def register(request):
+	if request.method == "POST":
+		form = UserCreationForm(request.POST)
+		if form.is_valid():
+			user = form.save()
+			login(request, user)
+			return redirect("home")
+	else:
+		form = UserCreationForm()
+
+	return render(request, "registration/register.html", {"form": form})
+
+
+login_view = LoginView.as_view(template_name="registration/login.html")
+logout_view = LogoutView.as_view(next_page="login")

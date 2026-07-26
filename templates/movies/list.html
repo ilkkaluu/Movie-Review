@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Movies | Movie Review{% endblock %}
+
+{% block content %}
+  <main>
+    <div class="nav" style="margin-bottom: 20px;">
+      <a href="{% url 'home' %}">Back to home</a>
+    </div>
+
+    <h1>Movies</h1>
+
+    <form method="get" style="margin-top: 16px;">
+      <input type="hidden" name="all" value="1">
+      <button class="button" type="submit">All movies</button>
+    </form>
+
+    <form method="get" style="display: flex; gap: 12px; margin-top: 20px; align-items: center; flex-wrap: wrap;">
+      <input
+        type="search"
+        name="q"
+        value="{{ search_query }}"
+        placeholder="Search for a movie"
+        aria-label="Search for a movie"
+        style="flex: 1; min-width: 220px;"
+      >
+      <button class="button primary" type="submit">Search</button>
+    </form>
+
+    <p class="help" style="margin-top: 20px;">{{ result_message }}</p>
+
+    <div style="display: grid; gap: 16px; margin-top: 24px;">
+      {% if movies %}
+        {% for movie in movies %}
+          <section style="padding: 16px; border: 1px solid var(--border); border-radius: 16px; background: #fff;">
+            <h2 style="margin: 0 0 12px; font-size: 1.05rem;">{{ movie.title }} ({{ movie.year }})</h2>
+            <form action="{% url 'add-to-watched-movie' %}" method="post">
+              {% csrf_token %}
+              <input type="hidden" name="movie_id" value="{{ movie.id }}">
+              <button class="button primary" type="submit">Add to watched movies</button>
+            </form>
+          </section>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </main>
+{% endblock %}

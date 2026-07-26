@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Log in | Movie Review{% endblock %}
+
+{% block content %}
+  <h1>Log in</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for field in form %}
+      <div class="field">
+        {{ field.label_tag }}
+        {{ field }}
+        {{ field.errors }}
+      </div>
+    {% endfor %}
+    <button class="button primary" type="submit">Log in</button>
+  </form>
+  <p class="help">Need an account? <a href="{% url 'register' %}">Register here</a>.</p>
+{% endblock %}

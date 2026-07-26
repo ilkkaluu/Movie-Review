@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Movie Review{% endblock %}
+
+{% block content %}
+  <main>
+    <h1>Movie Review</h1>
+    {% if user.is_authenticated %}
+      <p class="help">You are signed in. Choose where to go next.</p>
+      <div class="nav" style="margin-top: 20px;">
+        <a class="button primary" href="{% url 'movie-list' %}">Movies</a>
+        <a href="{% url 'profile' %}">Your profile</a>
+      </div>
+    {% else %}
+      <p class="help">Create an account or log in to continue.</p>
+    {% endif %}
+  </main>
+{% endblock %}

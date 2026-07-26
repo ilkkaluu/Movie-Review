@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Your profile | Movie Review{% endblock %}
+
+{% block content %}
+  <main>
+    <div class="nav" style="margin-bottom: 20px;">
+      <a href="{% url 'home' %}">Back to home</a>
+    </div>
+
+    <h1>Your profile</h1>
+
+    <h2 style="margin-top: 24px;">Watched movies</h2>
+    {% if watched_movies %}
+      <ul>
+        {% for movie in watched_movies %}
+          <li>
+            {{ movie.title }} ({{ movie.year }})
+            <a href="{% url 'leave-review' movie.id %}" style="margin-left: 8px;">Leave review</a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="help">You have not added any movies yet.</p>
+    {% endif %}
+
+    <h2 style="margin-top: 24px;">Your reviews</h2>
+    {% if reviews %}
+      <ul>
+        {% for review in reviews %}
+          <li style="margin-bottom: 12px;">
+            <strong>{{ review.watched_movie.title }} ({{ review.watched_movie.year }})</strong>
+            <a href="{% url 'leave-review' review.watched_movie.id %}" style="margin-left: 8px;">Edit review</a>
+            <div>Rating: {{ review.rating }}/5</div>
+            <div>{{ review.review_text }}</div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="help">You have not left any reviews yet.</p>
+    {% endif %}
+  </main>
+{% endblock %}
