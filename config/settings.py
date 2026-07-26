@@ -5,7 +5,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-change-me")
 DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",") if os.environ.get("DJANGO_ALLOWED_HOSTS") else []
+
+# A05 Security Misconfiguration demo:
+# To make the fix active, comment this line and uncomment the secure host configuration below.
+ALLOWED_HOSTS = ["*"]
+
+# Fix for A05 Security Misconfiguration:
+#ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "").split(",") if os.environ.get("DJANGO_ALLOWED_HOSTS") else []
 
 INSTALLED_APPS = [
     "django.contrib.admin",
