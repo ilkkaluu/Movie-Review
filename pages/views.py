@@ -1,13 +1,23 @@
 from django.contrib.auth import login
+from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import LogoutView
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseBadRequest, HttpResponseForbidden
 from django.views.decorators.http import require_POST
 from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.models import User
 
 from .forms import MovieReviewForm
 from .models import Movie, MovieReview, WatchedMovie
+
+
+class ShortAuthenticationForm(AuthenticationForm):
+	error_messages = {
+		**AuthenticationForm.error_messages,
+		"invalid_login": "Invalid username or password.",
+	}
 
 
 def home(request):
@@ -135,5 +145,28 @@ def register(request):
 	return render(request, "registration/register.html", {"form": form})
 
 
-login_view = LoginView.as_view(template_name="registration/login.html")
+def login_view(request):
+	if request.method == "POST":
+		form = ShortAuthenticationForm(request, data=request.POST)
+		username = request.POST.get("username", "").strip()
+		password = request.POST.get("password", "")
+
+		# A07 Identification and Authentication Failures:
+		# To make the fix active, comment this and uncomment the fix.
+		user = get_object_or_404(User, username=username)
+		login(request, user)
+		return redirect("home")
+
+		# Fix for A07 Identification and Authentication Failures:
+		#user = authenticate(request, username=username, password=password)
+		#if user is not None:
+		#	login(request, user)
+		#	return redirect("home")
+
+	else:
+		form = ShortAuthenticationForm(request)
+
+	return render(request, "registration/login.html", {"form": form})
+
+
 logout_view = LogoutView.as_view(next_page="login")
