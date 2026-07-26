@@ -2,7 +2,7 @@ from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest, HttpResponseForbidden
 from django.views.decorators.http import require_POST
 from django.shortcuts import get_object_or_404, redirect, render
 
@@ -89,6 +89,35 @@ def leave_review(request, watched_movie_id):
 	context = {
 		"watched_movie": watched_movie,
 		"form": form,
+	}
+	return render(request, "movies/leave_review.html", context)
+
+
+@login_required
+def edit_review(request, review_id):
+	# A01 Broken Access Control demo:
+	# To make the fix active, comment this and uncomment the fix below.
+	review = get_object_or_404(MovieReview, id=review_id)
+	watched_movie = review.watched_movie
+
+	# Fix for A01 Broken Access Control:
+	#review = get_object_or_404(MovieReview, id=review_id)
+	#watched_movie = review.watched_movie
+	#if watched_movie.user != request.user:
+	#	return HttpResponseForbidden("You are not allowed to edit this review.")
+
+	if request.method == "POST":
+		form = MovieReviewForm(request.POST, instance=review)
+		if form.is_valid():
+			form.save()
+			return redirect("profile")
+	else:
+		form = MovieReviewForm(instance=review)
+
+	context = {
+		"watched_movie": watched_movie,
+		"form": form,
+		"review": review,
 	}
 	return render(request, "movies/leave_review.html", context)
 

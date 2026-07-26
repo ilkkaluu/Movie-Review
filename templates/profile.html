@@ -30,7 +30,7 @@
         {% for review in reviews %}
           <li style="margin-bottom: 12px;">
             <strong>{{ review.watched_movie.title }} ({{ review.watched_movie.year }})</strong>
-            <a href="{% url 'leave-review' review.watched_movie.id %}" style="margin-left: 8px;">Edit review</a>
+            <a href="{% url 'edit-review' review.id %}" style="margin-left: 8px;">Edit review</a>
             <div>Rating: {{ review.rating }}/5</div>
             <div>{{ review.review_text }}</div>
           </li>

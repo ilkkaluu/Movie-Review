@@ -7,6 +7,7 @@ urlpatterns = [
     path("movies/", views.movie_list, name="movie-list"),
     path("movies/add-to-watched/", views.add_to_watched_movies, name="add-to-watched-movie"),
     path("movies/<int:watched_movie_id>/review/", views.leave_review, name="leave-review"),
+    path("reviews/<int:review_id>/edit/", views.edit_review, name="edit-review"),
     path("profile/", views.profile, name="profile"),
     path("register/", views.register, name="register"),
     path("login/", views.login_view, name="login"),
