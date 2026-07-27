@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LogoutView
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseBadRequest, HttpResponseForbidden
+from django.db import connection
 from django.views.decorators.http import require_POST
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.forms import AuthenticationForm
@@ -27,13 +28,33 @@ def home(request):
 @login_required
 def search_users(request):
 	search_query = request.GET.get("q", "").strip()
-	if search_query:
-		users = User.objects.filter(username__icontains=search_query).order_by("username")
+	if len(search_query) >= 2:
+		# A03 Injection demo:
+		# To make the fix active, comment out below and uncomment the fix.
+		with connection.cursor() as cursor:
+			cursor.execute(
+				f"SELECT id, username FROM auth_user WHERE username LIKE '%{search_query}%' ORDER BY username"
+			)
+			rows = cursor.fetchall()
+		users = [{"id": row[0], "username": row[1]} for row in rows]
+
+		# Fix for A03 Injection:
+		# with connection.cursor() as cursor:
+		# 	cursor.execute(
+		# 		"SELECT id, username FROM auth_user WHERE username LIKE %s ORDER BY username",
+		# 		[f"%{search_query}%"],
+		# 	)
+		# 	rows = cursor.fetchall()
+		# users = [{"id": row[0], "username": row[1]} for row in rows]
+
 		result_message = f'Search results for "{search_query}".'
-		if not users.exists():
+		if not users:
 			result_message = f'No users found with "{search_query}".'
+	elif search_query:
+		users = []
+		result_message = "Enter at least 2 characters to search for a username."
 	else:
-		users = User.objects.none()
+		users = []
 		result_message = "Search for a username to see matching users."
 
 	return render(
