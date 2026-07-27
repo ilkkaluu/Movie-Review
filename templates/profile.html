@@ -31,6 +31,11 @@
           <li style="margin-bottom: 12px;">
             <strong>{{ review.watched_movie.title }} ({{ review.watched_movie.year }})</strong>
             <a href="{% url 'edit-review' review.id %}" style="margin-left: 8px;">Edit review</a>
+            {% if review.is_private %}
+              <span class="help" style="margin-left: 8px;">Private</span>
+            {% else %}
+              <span class="help" style="margin-left: 8px;">Public</span>
+            {% endif %}
             <div>Rating: {{ review.rating }}/5</div>
             <div>{{ review.review_text }}</div>
           </li>

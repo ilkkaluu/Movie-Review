@@ -25,6 +25,15 @@ def home(request):
 	return render(request, "home.html")
 
 
+def public_reviews(request):
+	reviews = (
+		MovieReview.objects.filter(is_private=False)
+		.select_related("watched_movie", "watched_movie__user")
+		.order_by("-created_at")
+	)
+	return render(request, "reviews/public_reviews.html", {"reviews": reviews})
+
+
 @login_required
 def search_users(request):
 	search_query = request.GET.get("q", "").strip()

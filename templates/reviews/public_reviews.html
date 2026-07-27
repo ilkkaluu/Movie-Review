@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Public Reviews | Movie Review{% endblock %}
+
+{% block content %}
+  <main>
+    <div class="nav" style="margin-bottom: 20px;">
+      <a href="{% url 'home' %}">Back to home</a>
+    </div>
+
+    <h1>Public Reviews</h1>
+    <p class="help">These reviews are visible to everyone.</p>
+
+    <div style="display: grid; gap: 16px; margin-top: 24px;">
+      {% if reviews %}
+        {% for review in reviews %}
+          <section style="padding: 16px; border: 1px solid var(--border); border-radius: 16px; background: #fff;">
+            <h2 style="margin: 0 0 8px; font-size: 1.05rem;">{{ review.watched_movie.title }} ({{ review.watched_movie.year }})</h2>
+            <div class="help" style="margin-bottom: 8px;">By {{ review.watched_movie.user.username }}</div>
+            <div>Rating: {{ review.rating }}/5</div>
+            <div style="margin-top: 8px;">{{ review.review_text }}</div>
+          </section>
+        {% endfor %}
+      {% else %}
+        <p class="help">No public reviews yet.</p>
+      {% endif %}
+    </div>
+  </main>
+{% endblock %}

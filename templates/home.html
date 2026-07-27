@@ -5,6 +5,9 @@
 {% block content %}
   <main>
     <h1>Movie Review</h1>
+    <div class="nav" style="margin-top: 20px;">
+      <a class="button" href="{% url 'public-reviews' %}">Public reviews</a>
+    </div>
     {% if user.is_authenticated %}
       <p class="help">You are signed in. Choose where to go next.</p>
       <div class="nav" style="margin-top: 20px;">

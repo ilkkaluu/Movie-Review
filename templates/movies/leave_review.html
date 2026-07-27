@@ -16,8 +16,15 @@
       {{ form.non_field_errors }}
       {% for field in form %}
         <div class="field">
-          {{ field.label_tag }}
-          {{ field }}
+          {% if field.name == 'is_private' %}
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.95rem; color: var(--text);">
+              {{ field }}
+              {{ field.label }}
+            </label>
+          {% else %}
+            {{ field.label_tag }}
+            {{ field }}
+          {% endif %}
           {{ field.errors }}
         </div>
       {% endfor %}

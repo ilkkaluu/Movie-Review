@@ -38,6 +38,7 @@ class MovieReview(models.Model):
 	watched_movie = models.OneToOneField(WatchedMovie, on_delete=models.CASCADE, related_name="review")
 	rating = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
 	review_text = models.TextField()
+	is_private = models.BooleanField(default=False)
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField(auto_now=True)
 

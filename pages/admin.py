@@ -19,6 +19,6 @@ class WatchedMovieAdmin(admin.ModelAdmin):
 
 @admin.register(MovieReview)
 class MovieReviewAdmin(admin.ModelAdmin):
-	list_display = ("watched_movie", "rating", "created_at", "updated_at")
+	list_display = ("watched_movie", "rating", "is_private", "created_at", "updated_at")
 	search_fields = ("watched_movie__title", "watched_movie__user__username")
-	list_filter = ("rating",)
+	list_filter = ("rating", "is_private")
