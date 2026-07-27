@@ -81,7 +81,7 @@ LOGOUT_REDIRECT_URL = "login"
 # - Flawed mode: keep SECURITY_EVENT_LOGGING_ENABLED = False.
 # - Fixed mode: set SECURITY_EVENT_LOGGING_ENABLED = True.
 
-SECURITY_EVENT_LOGGING_ENABLED = True
+SECURITY_EVENT_LOGGING_ENABLED = False
 
 # Fix for A09 Security Logging and Monitoring Failures:
 #LOGGING = {
