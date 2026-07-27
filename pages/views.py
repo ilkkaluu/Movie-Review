@@ -1,5 +1,6 @@
 import logging
 
+from django.conf import settings
 from django.contrib.auth import login
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserCreationForm
@@ -17,6 +18,11 @@ from .models import Movie, MovieReview, WatchedMovie
 
 
 security_logger = logging.getLogger("pages.security")
+
+
+def log_security_event(level, message, *args):
+	if getattr(settings, "SECURITY_EVENT_LOGGING_ENABLED", False):
+		getattr(security_logger, level)(message, *args)
 
 
 class ShortAuthenticationForm(AuthenticationForm):
@@ -143,7 +149,8 @@ def watched_movies_page(request):
 def watched_movies_user_page(request, user_id):
 	target_user = get_object_or_404(User, id=user_id)
 	if target_user != request.user:
-		security_logger.warning(
+		log_security_event(
+			"warning",
 			"security_event=access_denied action=view_watch_list username=%s target_user_id=%s",
 			request.user.username,
 			user_id,
@@ -182,14 +189,16 @@ def leave_review(request, watched_movie_id):
 			review_obj.watched_movie = watched_movie
 			review_obj.save()
 			if review_was_new:
-				security_logger.info(
+				log_security_event(
+					"info",
 					"security_event=review_created username=%s watched_movie_id=%s review_id=%s",
 					request.user.username,
 					watched_movie_id,
 					review_obj.id,
 				)
 			else:
-				security_logger.info(
+				log_security_event(
+					"info",
 					"security_event=review_updated username=%s watched_movie_id=%s review_id=%s",
 					request.user.username,
 					watched_movie_id,
@@ -214,10 +223,14 @@ def edit_review(request, review_id):
 	watched_movie = review.watched_movie
 
 	# Fix for A01 Broken Access Control:
+	# Also part of the A09 Security Logging and Monitoring fix, 
+	# since the access control violations are logged in the same place.
+	
 	#review = get_object_or_404(MovieReview, id=review_id)
 	#watched_movie = review.watched_movie
 	#if watched_movie.user != request.user:
-	#	security_logger.warning(
+	#	log_security_event(
+	#		"warning",
 	#		"security_event=access_denied action=edit_review username=%s target_review_id=%s target_user_id=%s",
 	#		request.user.username,
 	#		review_id,
@@ -229,7 +242,8 @@ def edit_review(request, review_id):
 		form = MovieReviewForm(request.POST, instance=review)
 		if form.is_valid():
 			form.save()
-			security_logger.info(
+			log_security_event(
+				"info",
 				"security_event=review_edited username=%s review_id=%s watched_movie_id=%s",
 				request.user.username,
 				review_id,
@@ -277,14 +291,14 @@ def login_view(request):
 		# Also uncomment this when trying out A09: Security Logging and Monitoring
 		# Failures fix, since the identification
 		# and authentication failures are logged in the same place.
-		
+
 		#user = authenticate(request, username=username, password=password)
 		#if user is not None:
 		#	login(request, user)
-		#	security_logger.info("security_event=login_success username=%s", username)
+		#	log_security_event("info", "security_event=login_success username=%s", username)
 		#	return redirect("home")
 
-		#security_logger.warning("security_event=login_failure username=%s", username)
+		#log_security_event("warning", "security_event=login_failure username=%s", username)
 
 	else:
 		form = ShortAuthenticationForm(request)

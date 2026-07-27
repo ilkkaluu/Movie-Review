@@ -76,6 +76,12 @@ LOGOUT_REDIRECT_URL = "login"
 # Exact source: this settings module does not define application security
 # logging or audit trails for authentication, authorization, or other sensitive
 # actions.
+#
+# Switching between flawed and fixed demo modes:
+# - Flawed mode: keep SECURITY_EVENT_LOGGING_ENABLED = False.
+# - Fixed mode: set SECURITY_EVENT_LOGGING_ENABLED = True.
+
+SECURITY_EVENT_LOGGING_ENABLED = True
 
 # Fix for A09 Security Logging and Monitoring Failures:
 #LOGGING = {
