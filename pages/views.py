@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib.auth import login
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserCreationForm
@@ -12,6 +14,9 @@ from django.contrib.auth.models import User
 
 from .forms import MovieReviewForm
 from .models import Movie, MovieReview, WatchedMovie
+
+
+security_logger = logging.getLogger("pages.security")
 
 
 class ShortAuthenticationForm(AuthenticationForm):
@@ -138,6 +143,11 @@ def watched_movies_page(request):
 def watched_movies_user_page(request, user_id):
 	target_user = get_object_or_404(User, id=user_id)
 	if target_user != request.user:
+		security_logger.warning(
+			"security_event=access_denied action=view_watch_list username=%s target_user_id=%s",
+			request.user.username,
+			user_id,
+		)
 		return HttpResponseForbidden("You are not allowed to view this watch list.")
 	watched_movies = WatchedMovie.objects.filter(user=target_user).select_related("review")
 	watched_movies = watched_movies.filter(review__is_private=False)
@@ -167,9 +177,24 @@ def leave_review(request, watched_movie_id):
 	if request.method == "POST":
 		form = MovieReviewForm(request.POST, instance=review)
 		if form.is_valid():
+			review_was_new = review is None
 			review_obj = form.save(commit=False)
 			review_obj.watched_movie = watched_movie
 			review_obj.save()
+			if review_was_new:
+				security_logger.info(
+					"security_event=review_created username=%s watched_movie_id=%s review_id=%s",
+					request.user.username,
+					watched_movie_id,
+					review_obj.id,
+				)
+			else:
+				security_logger.info(
+					"security_event=review_updated username=%s watched_movie_id=%s review_id=%s",
+					request.user.username,
+					watched_movie_id,
+					review_obj.id,
+				)
 			return redirect("profile")
 	else:
 		form = MovieReviewForm(instance=review)
@@ -192,12 +217,24 @@ def edit_review(request, review_id):
 	#review = get_object_or_404(MovieReview, id=review_id)
 	#watched_movie = review.watched_movie
 	#if watched_movie.user != request.user:
+	#	security_logger.warning(
+	#		"security_event=access_denied action=edit_review username=%s target_review_id=%s target_user_id=%s",
+	#		request.user.username,
+	#		review_id,
+	#		watched_movie.user_id,
+	#	)
 	#	return HttpResponseForbidden("You are not allowed to edit this review.")
 
 	if request.method == "POST":
 		form = MovieReviewForm(request.POST, instance=review)
 		if form.is_valid():
 			form.save()
+			security_logger.info(
+				"security_event=review_edited username=%s review_id=%s watched_movie_id=%s",
+				request.user.username,
+				review_id,
+				watched_movie.id,
+			)
 			return redirect("profile")
 	else:
 		form = MovieReviewForm(instance=review)
@@ -236,10 +273,18 @@ def login_view(request):
 		return redirect("home")
 
 		# Fix for A07 Identification and Authentication Failures:
+		
+		# Also uncomment this when trying out A09: Security Logging and Monitoring
+		# Failures fix, since the identification
+		# and authentication failures are logged in the same place.
+		
 		#user = authenticate(request, username=username, password=password)
 		#if user is not None:
 		#	login(request, user)
+		#	security_logger.info("security_event=login_success username=%s", username)
 		#	return redirect("home")
+
+		#security_logger.warning("security_event=login_failure username=%s", username)
 
 	else:
 		form = ShortAuthenticationForm(request)
