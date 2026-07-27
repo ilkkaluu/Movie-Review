@@ -24,6 +24,29 @@ def home(request):
 	return render(request, "home.html")
 
 
+@login_required
+def search_users(request):
+	search_query = request.GET.get("q", "").strip()
+	if search_query:
+		users = User.objects.filter(username__icontains=search_query).order_by("username")
+		result_message = f'Search results for "{search_query}".'
+		if not users.exists():
+			result_message = f'No users found with "{search_query}".'
+	else:
+		users = User.objects.none()
+		result_message = "Search for a username to see matching users."
+
+	return render(
+		request,
+		"users/search_users.html",
+		{
+			"users": users,
+			"search_query": search_query,
+			"result_message": result_message,
+		},
+	)
+
+
 def movie_list(request):
 	search_query = request.GET.get("q", "").strip()
 	show_all = request.GET.get("all") == "1"

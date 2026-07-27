@@ -9,6 +9,7 @@
       <p class="help">You are signed in. Choose where to go next.</p>
       <div class="nav" style="margin-top: 20px;">
         <a class="button primary" href="{% url 'movie-list' %}">Movies</a>
+        <a class="button" href="{% url 'search-users' %}">Search users</a>
         <a href="{% url 'profile' %}">Your profile</a>
       </div>
     {% else %}

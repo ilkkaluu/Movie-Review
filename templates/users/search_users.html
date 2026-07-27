@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Search Users | Movie Review{% endblock %}
+
+{% block content %}
+  <main>
+    <div class="nav" style="margin-bottom: 20px;">
+      <a href="{% url 'home' %}">Back to home</a>
+    </div>
+
+    <h1>Search Users</h1>
+
+    <form method="get" style="display: flex; gap: 12px; margin-top: 20px; align-items: center; flex-wrap: wrap;">
+      <input
+        type="search"
+        name="q"
+        value="{{ search_query }}"
+        placeholder="Search by username"
+        aria-label="Search by username"
+        style="flex: 1; min-width: 220px;"
+      >
+      <button class="button primary" type="submit">Search</button>
+    </form>
+
+    <p class="help" style="margin-top: 20px;">{{ result_message }}</p>
+
+    <div style="display: grid; gap: 16px; margin-top: 24px;">
+      {% if users %}
+        {% for user in users %}
+          <section style="padding: 16px; border: 1px solid var(--border); border-radius: 16px; background: #fff;">
+            <h2 style="margin: 0; font-size: 1.05rem;">{{ user.username }}</h2>
+          </section>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </main>
+{% endblock %}
