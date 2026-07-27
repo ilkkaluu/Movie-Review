@@ -135,6 +135,27 @@ def watched_movies_page(request):
 
 
 @login_required
+def watched_movies_user_page(request, user_id):
+	# A04 Insecure Design demo:
+	# To make the fix active, comment this and uncomment the fix below.
+	target_user = get_object_or_404(User, id=user_id)
+	watched_movies = WatchedMovie.objects.filter(user=target_user).select_related("review")
+
+	# Fix for A04 Insecure Design:
+	# target_user = get_object_or_404(User, id=user_id)
+	# if target_user != request.user:
+	# 	return HttpResponseForbidden("You are not allowed to view this watch list.")
+	# watched_movies = WatchedMovie.objects.filter(user=target_user).select_related("review")
+	# watched_movies = watched_movies.filter(review__is_private=False)
+
+	return render(
+		request,
+		"profile/watched_movies.html",
+		{"watched_movies": watched_movies, "profile_owner": target_user},
+	)
+
+
+@login_required
 def user_reviews_page(request):
 	reviews = MovieReview.objects.filter(watched_movie__user=request.user).select_related("watched_movie")
 	return render(request, "profile/user_reviews.html", {"reviews": reviews})

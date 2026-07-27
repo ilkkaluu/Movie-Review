@@ -8,19 +8,31 @@
       <a href="{% url 'profile' %}">Back to profile</a>
     </div>
 
-    <h1>Watched movies</h1>
+    <h1>{% if profile_owner %}{% if profile_owner == user %}Watched movies{% else %}{{ profile_owner.username }}'s watched movies{% endif %}{% else %}Watched movies{% endif %}</h1>
 
     {% if watched_movies %}
       <ul>
         {% for movie in watched_movies %}
-          <li>
+          <li style="margin-bottom: 12px;">
             {{ movie.title }} ({{ movie.year }})
             <a href="{% url 'leave-review' movie.id %}" style="margin-left: 8px;">Leave review</a>
+            {% if movie.review %}
+              <div style="margin-top: 6px;">
+                <strong>Review:</strong>
+                {% if movie.review.is_private %}
+                  <span class="help" style="margin-left: 8px;">Private</span>
+                {% else %}
+                  <span class="help" style="margin-left: 8px;">Public</span>
+                {% endif %}
+                <div>Rating: {{ movie.review.rating }}/5</div>
+                <div>{{ movie.review.review_text }}</div>
+              </div>
+            {% endif %}
           </li>
         {% endfor %}
       </ul>
     {% else %}
-      <p class="help">You have not added any movies yet.</p>
+      <p class="help">{% if profile_owner and profile_owner != user %}This user has not added any movies yet.{% else %}You have not added any movies yet.{% endif %}</p>
     {% endif %}
   </main>
 {% endblock %}

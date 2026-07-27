@@ -7,6 +7,7 @@ urlpatterns = [
     path("users/", views.search_users, name="search-users"),
     path("reviews/public/", views.public_reviews, name="public-reviews"),
     path("profile/watched-movies/", views.watched_movies_page, name="watched-movies-page"),
+    path("profile/watched-movies/<int:user_id>/", views.watched_movies_user_page, name="watched-movies-user-page"),
     path("profile/reviews/", views.user_reviews_page, name="user-reviews-page"),
     path("movies/", views.movie_list, name="movie-list"),
     path("movies/add-to-watched/", views.add_to_watched_movies, name="add-to-watched-movie"),
