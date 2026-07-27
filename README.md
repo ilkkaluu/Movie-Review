@@ -18,7 +18,7 @@ Project was created for the Cyber Security Base MOOC course project at the Unive
 
 
 1. Clone the repository.  
-```git clone https://github.com/ilkkaluu/Movie-Review.git```
+```git clone https://github.com/ilkkaluu/Movie-Review.git```   
 ```cd Movie-Review```
 3. Create and activate a virtual environment.   
 ```python3 -m venv venv```   
