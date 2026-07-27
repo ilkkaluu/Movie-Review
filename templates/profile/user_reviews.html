@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Your Reviews | Movie Review{% endblock %}
+
+{% block content %}
+  <main>
+    <div class="nav" style="margin-bottom: 20px;">
+      <a href="{% url 'profile' %}">Back to profile</a>
+    </div>
+
+    <h1>Your reviews</h1>
+
+    {% if reviews %}
+      <ul>
+        {% for review in reviews %}
+          <li style="margin-bottom: 12px;">
+            <strong>{{ review.watched_movie.title }} ({{ review.watched_movie.year }})</strong>
+            <a href="{% url 'edit-review' review.id %}" style="margin-left: 8px;">Edit review</a>
+            {% if review.is_private %}
+              <span class="help" style="margin-left: 8px;">Private</span>
+            {% else %}
+              <span class="help" style="margin-left: 8px;">Public</span>
+            {% endif %}
+            <div>Rating: {{ review.rating }}/5</div>
+            <div>{{ review.review_text }}</div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="help">You have not left any reviews yet.</p>
+    {% endif %}
+  </main>
+{% endblock %}

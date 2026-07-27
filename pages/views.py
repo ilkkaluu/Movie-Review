@@ -125,9 +125,19 @@ def add_to_watched_movies(request):
 
 @login_required
 def profile(request):
+	return render(request, "profile.html")
+
+
+@login_required
+def watched_movies_page(request):
 	watched_movies = WatchedMovie.objects.filter(user=request.user)
+	return render(request, "profile/watched_movies.html", {"watched_movies": watched_movies})
+
+
+@login_required
+def user_reviews_page(request):
 	reviews = MovieReview.objects.filter(watched_movie__user=request.user).select_related("watched_movie")
-	return render(request, "profile.html", {"watched_movies": watched_movies, "reviews": reviews})
+	return render(request, "profile/user_reviews.html", {"reviews": reviews})
 
 
 @login_required

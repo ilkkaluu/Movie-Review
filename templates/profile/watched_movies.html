@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Watched Movies | Movie Review{% endblock %}
+
+{% block content %}
+  <main>
+    <div class="nav" style="margin-bottom: 20px;">
+      <a href="{% url 'profile' %}">Back to profile</a>
+    </div>
+
+    <h1>Watched movies</h1>
+
+    {% if watched_movies %}
+      <ul>
+        {% for movie in watched_movies %}
+          <li>
+            {{ movie.title }} ({{ movie.year }})
+            <a href="{% url 'leave-review' movie.id %}" style="margin-left: 8px;">Leave review</a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="help">You have not added any movies yet.</p>
+    {% endif %}
+  </main>
+{% endblock %}
