@@ -71,3 +71,26 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "login"
+
+# A09 Security Logging and Monitoring Failures demo:
+# Exact source: this settings module does not define application security
+# logging or audit trails for authentication, authorization, or other sensitive
+# actions.
+
+# Fix for A09 Security Logging and Monitoring Failures:
+#LOGGING = {
+#	"version": 1,
+#	"disable_existing_loggers": False,
+#	"handlers": {
+#		"console": {
+#			"class": "logging.StreamHandler",
+#		},
+#	},
+#	"loggers": {
+#		"pages.security": {
+#			"handlers": ["console"],
+#			"level": "INFO",
+#			"propagate": False,
+#		},
+#	},
+#}
