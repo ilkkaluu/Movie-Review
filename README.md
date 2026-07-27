@@ -7,19 +7,26 @@ Project was created for the Cyber Security Base MOOC course project at the Unive
 ## Features
 - user registration and log in   
 - public movie listing
+- public review listing
 - search movies by title
+- search users
 - personal "Watched movies" page for users to manage their watched movies
+- personal "Your reviews" page for users to manage their reviews
 - add and review watched movies
 
 ## Getting started
 
 
 1. Clone the repository.  
-2. Create and activate a virtual environment.
-3. Install dependencies with `pip install -r requirements.txt`.
-4. Run migrations with `python manage.py migrate`.
-5. Start the development server with `python manage.py runserver`.
-6. Open your browser and visit `http://127.0.0.1:8000/`.
+```git clone https://github.com/ilkkaluu/Movie-Review.git```
+```cd Movie-Review```
+3. Create and activate a virtual environment.   
+```python3 -m venv venv```   
+```source venv/bin/activate```
+5. Install dependencies with `pip install -r requirements.txt`.
+6. Run migrations with `python manage.py migrate`.
+7. Start the development server with `python manage.py runserver`.
+8. Open your browser and visit `http://127.0.0.1:8000/`.
 
 ## Authentication
 
